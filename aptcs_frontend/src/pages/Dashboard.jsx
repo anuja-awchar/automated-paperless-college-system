@@ -30,7 +30,8 @@ const Dashboard = () => {
                         </div>
                         <div className="bg-white p-6 rounded-lg shadow-md border hover:border-indigo-500 transition-colors">
                             <h3 className="text-lg font-semibold mb-2">Facility Booking</h3>
-                            <p className="text-gray-600">Book auditorium, labs, or grounds.</p>
+                            <p className="text-gray-600 mb-4">Book auditorium, labs, or grounds.</p>
+                            <a href="/facilities" className="text-indigo-600 hover:text-indigo-800 font-medium">Book Now &rarr;</a>
                         </div>
                         <div className="bg-white p-6 rounded-lg shadow-md border hover:border-indigo-500 transition-colors">
                             <h3 className="text-lg font-semibold mb-2">Leave Management</h3>

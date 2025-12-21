@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import PrivateRoute from './components/PrivateRoute';
 import ElectionList from './pages/ElectionList';
 import VotingInterface from './pages/VotingInterface';
+import FacilityList from './pages/FacilityList';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/elections" element={<ElectionList />} />
             <Route path="/election/:id" element={<VotingInterface />} />
+            <Route path="/facilities" element={<FacilityList />} />
           </Route>
         </Routes>
       </AuthProvider>
