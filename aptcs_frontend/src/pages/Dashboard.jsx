@@ -35,7 +35,8 @@ const Dashboard = () => {
                         </div>
                         <div className="bg-white p-6 rounded-lg shadow-md border hover:border-indigo-500 transition-colors">
                             <h3 className="text-lg font-semibold mb-2">Leave Management</h3>
-                            <p className="text-gray-600">Apply for leave or check status.</p>
+                            <p className="text-gray-600 mb-4">Apply for leave or check status.</p>
+                            <a href="/leaves" className="text-indigo-600 hover:text-indigo-800 font-medium">Manage Leaves &rarr;</a>
                         </div>
                     </div>
                 </div>
