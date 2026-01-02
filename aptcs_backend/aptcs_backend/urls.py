@@ -23,4 +23,5 @@ urlpatterns = [
     path('api/election/', include('election.urls')),
     path('api/facility/', include('facility.urls')),
     path('api/leave/', include('leave.urls')),
+    path('api/complaint/', include('complaint.urls')),
 ]

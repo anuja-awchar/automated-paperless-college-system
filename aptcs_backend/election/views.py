@@ -3,10 +3,17 @@ from rest_framework.response import Response
 from .models import Election, Candidate, Vote
 from .serializers import ElectionSerializer, CandidateSerializer, VoteSerializer
 
+from django.db.models import Count, Prefetch
+
 class ElectionViewSet(viewsets.ModelViewSet):
     queryset = Election.objects.all()
     serializer_class = ElectionSerializer
     
+    def get_queryset(self):
+        return Election.objects.prefetch_related(
+            Prefetch('candidates', queryset=Candidate.objects.annotate(votes_annotated=Count('votes')))
+        )
+
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
             return [permissions.IsAuthenticated()]

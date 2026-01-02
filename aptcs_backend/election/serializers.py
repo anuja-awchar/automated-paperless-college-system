@@ -3,9 +3,14 @@ from .models import Election, Candidate, Vote
 from django.utils import timezone
 
 class CandidateSerializer(serializers.ModelSerializer):
+    vote_count = serializers.SerializerMethodField()
+
     class Meta:
         model = Candidate
-        fields = ['id', 'name', 'manifesto', 'photo', 'election']
+        fields = ['id', 'name', 'manifesto', 'photo', 'election', 'vote_count']
+
+    def get_vote_count(self, obj):
+        return getattr(obj, 'votes_annotated', obj.votes.count())
 
 class ElectionSerializer(serializers.ModelSerializer):
     candidates = CandidateSerializer(many=True, read_only=True)

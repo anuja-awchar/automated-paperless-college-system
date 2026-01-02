@@ -38,6 +38,11 @@ const Dashboard = () => {
                             <p className="text-gray-600 mb-4">Apply for leave or check status.</p>
                             <a href="/leaves" className="text-indigo-600 hover:text-indigo-800 font-medium">Manage Leaves &rarr;</a>
                         </div>
+                        <div className="bg-white p-6 rounded-lg shadow-md border hover:border-indigo-500 transition-colors">
+                            <h3 className="text-lg font-semibold mb-2">Complaints</h3>
+                            <p className="text-gray-600 mb-4">File anonymous complaints or suggestions.</p>
+                            <a href="/complaints" className="text-red-600 hover:text-red-800 font-medium">File Complaint &rarr;</a>
+                        </div>
                     </div>
                 </div>
             </div>
