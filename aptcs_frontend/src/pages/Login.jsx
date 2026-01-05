@@ -3,7 +3,7 @@ import AuthContext from '../context/AuthContext';
 import { Lock, User, CheckCircle, ArrowRight, Loader2 } from 'lucide-react';
 
 const Login = () => {
-    const { loginUser } = useContext(AuthContext);
+    const { loginUser, loginError } = useContext(AuthContext);
     const [isLoading, setIsLoading] = useState(false);
     const [focusedField, setFocusedField] = useState(null);
 

@@ -9,12 +9,14 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(() => localStorage.getItem('authTokens') ? jwtDecode(localStorage.getItem('authTokens')) : null);
     const [authTokens, setAuthTokens] = useState(() => localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens')) : null);
     const [loading, setLoading] = useState(true);
+    const [loginError, setLoginError] = useState('');
     const navigate = useNavigate();
 
     const loginUser = async (e) => {
         e.preventDefault();
+        setLoginError('');
         try {
-            const response = await axios.post('http://127.0.0.1:8000/api/users/login/', {
+            const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/users/login/`, {
                 username: e.target.username.value,
                 password: e.target.password.value
             });
@@ -25,7 +27,8 @@ export const AuthProvider = ({ children }) => {
                 navigate('/');
             }
         } catch (error) {
-            alert('Something went wrong!');
+            const errorMessage = error.response?.data?.detail || error.response?.data?.error || 'Login failed. Please check your credentials.';
+            setLoginError(errorMessage);
             console.error("Login Error:", error);
         }
     };
