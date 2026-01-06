@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import Navigation from '../components/Navigation';
-import { Calendar, Users, X, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { Calendar, Users, X, Loader2, CheckCircle, AlertCircle, Building } from 'lucide-react';
+import { toast } from 'react-toastify';
 
 const FacilityList = () => {
     const [facilities, setFacilities] = useState([]);
@@ -13,6 +13,7 @@ const FacilityList = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         fetchFacilities();
@@ -27,6 +28,8 @@ const FacilityList = () => {
         } catch (error) {
             console.error("Error fetching facilities:", error);
             setErrorMessage('Failed to load facilities. Please try again.');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -46,14 +49,14 @@ const FacilityList = () => {
             }, {
                 headers: { 'Authorization': `Bearer ${authTokens.access}` }
             });
-            setSuccessMessage('Booking request submitted successfully!');
+            toast.success('Booking request submitted successfully!');
             setShowModal(false);
             setBookingData({ start_time: '', end_time: '', purpose: '' });
-            setTimeout(() => setSuccessMessage(''), 5000);
         } catch (error) {
             console.error("Booking failed:", error);
             const errorMsg = error.response?.data?.detail || error.response?.data?.error || 'Booking failed. Please try again.';
             setErrorMessage(errorMsg);
+            toast.error(errorMsg);
         } finally {
             setIsSubmitting(false);
         }
@@ -64,7 +67,13 @@ const FacilityList = () => {
             <div className="max-w-6xl mx-auto">
                 <h1 className="text-3xl font-extrabold text-gray-900 mb-8">Campus Facilities</h1>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {isLoading ? (
+                        <div className="flex justify-center items-center py-12">
+                            <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+                            <span className="ml-2 text-slate-400">Loading facilities...</span>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {facilities.map((facility) => (
                             <div key={facility.id} className="group bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl overflow-hidden hover:bg-slate-800/70 hover:border-indigo-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/10 hover:-translate-y-1">
                                 <div className="h-48 bg-slate-700/50">
@@ -97,8 +106,8 @@ const FacilityList = () => {
                                 </div>
                             </div>
                         ))}
-                    </div>
-
+                        </div>
+                    )}
                     {/* Booking Modal */}
                     {showModal && (
                         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
