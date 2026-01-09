@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { Calendar, Users, X, Loader2, CheckCircle, AlertCircle, Building } from 'lucide-react';
-import { toast } from 'react-toastify';
+import toast from 'react-hot-toast';
 
 const FacilityList = () => {
     const [facilities, setFacilities] = useState([]);

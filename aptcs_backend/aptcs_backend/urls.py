@@ -16,8 +16,24 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.http import JsonResponse
+
+def api_root(request):
+    return JsonResponse({
+        "message": "APTCS Backend API",
+        "version": "1.0.0",
+        "endpoints": {
+            "admin": "/admin/",
+            "users": "/api/users/",
+            "election": "/api/election/",
+            "facility": "/api/facility/",
+            "leave": "/api/leave/",
+            "complaint": "/api/complaint/"
+        }
+    })
 
 urlpatterns = [
+    path('', api_root, name='api-root'),
     path('admin/', admin.site.urls),
     path('api/users/', include('users.urls')),
     path('api/election/', include('election.urls')),
