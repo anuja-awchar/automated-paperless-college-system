@@ -1,3 +1,4 @@
+
 - [x] Add 'Building' to lucide-react import in FacilityList.jsx
 - [x] Import 'toast' from 'react-toastify' in FacilityList.jsx
 - [x] Update fetchFacilities to set isLoading to false after fetching

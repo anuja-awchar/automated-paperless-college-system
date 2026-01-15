@@ -2,7 +2,8 @@ import { createContext, useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from 'react-router-dom';
-import toast, { Toaster } from 'react-hot-toast';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AuthContext = createContext();
 
@@ -60,27 +61,21 @@ export const AuthProvider = ({ children }) => {
     return (
         <AuthContext.Provider value={contextData}>
             {loading ? null : children}
-            <Toaster
+            <ToastContainer
                 position="top-right"
-                toastOptions={{
-                    duration: 4000,
-                    style: {
-                        background: '#1e293b',
-                        color: '#f1f5f9',
-                        border: '1px solid #334155',
-                    },
-                    success: {
-                        iconTheme: {
-                            primary: '#10b981',
-                            secondary: '#f1f5f9',
-                        },
-                    },
-                    error: {
-                        iconTheme: {
-                            primary: '#ef4444',
-                            secondary: '#f1f5f9',
-                        },
-                    },
+                autoClose={4000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+                toastStyle={{
+                    background: '#1e293b',
+                    color: '#f1f5f9',
+                    border: '1px solid #334155',
                 }}
             />
         </AuthContext.Provider>
