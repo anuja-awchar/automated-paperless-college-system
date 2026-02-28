@@ -44,10 +44,10 @@ const LeaveList = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-slate-900/80 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto">
                 <div className="flex justify-between items-center mb-8">
-                    <h1 className="text-3xl font-extrabold text-gray-900">Leave Applications</h1>
+                    <h1 className="text-3xl font-extrabold text-white">Leave Applications</h1>
                     {user && user.role === 'student' && (
                         <button
                             onClick={() => setShowModal(true)}
@@ -59,16 +59,16 @@ const LeaveList = () => {
                     )}
                 </div>
 
-                <div className="bg-white shadow overflow-hidden sm:rounded-md">
-                    <ul className="divide-y divide-gray-200">
+                <div className="bg-slate-800/70 shadow-lg border border-slate-700 overflow-hidden sm:rounded-2xl">
+                    <ul className="divide-y divide-slate-700">
                         {leaves.length === 0 ? (
-                            <li className="px-4 py-4 text-center text-gray-500">No leave requests found.</li>
+                            <li className="px-4 py-4 text-center text-slate-400">No leave requests found.</li>
                         ) : (
                             leaves.map((leave) => (
                                 <li key={leave.id}>
                                     <div className="px-4 py-4 sm:px-6">
                                         <div className="flex items-center justify-between">
-                                            <p className="text-sm font-medium text-indigo-600 truncate">{leave.student_name} - {leave.reason}</p>
+                                            <p className="text-sm font-medium text-indigo-300 truncate">{leave.student_name} - {leave.reason}</p>
                                             <div className="ml-2 flex-shrink-0 flex">
                                                 <p className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${leave.status === 'approved' ? 'bg-green-100 text-green-800' :
                                                         leave.status === 'rejected' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'
@@ -79,8 +79,8 @@ const LeaveList = () => {
                                         </div>
                                         <div className="mt-2 sm:flex sm:justify-between">
                                             <div className="sm:flex">
-                                                <p className="flex items-center text-sm text-gray-500">
-                                                    <FileText className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" />
+                                                <p className="flex items-center text-sm text-slate-300">
+                                                    <FileText className="flex-shrink-0 mr-1.5 h-5 w-5 text-slate-400" />
                                                     {new Date(leave.start_date).toLocaleDateString()} - {new Date(leave.end_date).toLocaleDateString()}
                                                 </p>
                                             </div>
