@@ -9,6 +9,7 @@ django.setup()
 
 from django.contrib.auth import get_user_model
 from election.models import Election, Candidate, Vote
+from facility.models import Facility
 
 User = get_user_model()
 
@@ -32,6 +33,54 @@ def setup_data():
             u.set_password('password123')
             u.save()
         voters.append(u)
+
+    # Create sample campus facilities
+    facilities_data = [
+        {
+            "name": "Main Auditorium",
+            "type": "auditorium",
+            "capacity": 500,
+            "description": "Central auditorium used for college events, seminars, and cultural programmes.",
+        },
+        {
+            "name": "Computer Lab A",
+            "type": "lab",
+            "capacity": 60,
+            "description": "High-speed computing lab with projectors and air conditioning.",
+        },
+        {
+            "name": "Electronics Lab",
+            "type": "lab",
+            "capacity": 40,
+            "description": "Practical lab for electronics and communication engineering experiments.",
+        },
+        {
+            "name": "Seminar Hall - Block B",
+            "type": "classroom",
+            "capacity": 120,
+            "description": "Large seminar hall with tiered seating and audio-visual equipment.",
+        },
+        {
+            "name": "Central Sports Ground",
+            "type": "ground",
+            "capacity": 200,
+            "description": "Multi-purpose ground for football, cricket, and athletics practice.",
+        },
+    ]
+
+    for data in facilities_data:
+        facility, created_fac = Facility.objects.get_or_create(
+            name=data["name"],
+            defaults={
+                "type": data["type"],
+                "capacity": data["capacity"],
+                "description": data["description"],
+            },
+        )
+        if created_fac:
+            print(f"Created facility: {facility.name}")
+        else:
+            print(f"Facility already exists: {facility.name}")
 
     # 1. Closed Election with Results
     end_date = timezone.now() - datetime.timedelta(days=1)
