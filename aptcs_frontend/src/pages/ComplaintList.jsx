@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { MessageSquare, Plus, X, Lock, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { toast } from 'react-toastify';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const ComplaintList = () => {
     const [complaints, setComplaints] = useState([]);
@@ -17,7 +20,7 @@ const ComplaintList = () => {
 
     const fetchComplaints = async () => {
         try {
-            const response = await axios.get('http://127.0.0.1:8000/api/complaint/complaints/', {
+            const response = await axios.get(`${API_BASE_URL}/complaint/complaints/`, {
                 headers: { 'Authorization': `Bearer ${authTokens.access}` }
             });
             setComplaints(response.data);
@@ -29,16 +32,16 @@ const ComplaintList = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://127.0.0.1:8000/api/complaint/complaints/', formData, {
+            await axios.post(`${API_BASE_URL}/complaint/complaints/`, formData, {
                 headers: { 'Authorization': `Bearer ${authTokens.access}` }
             });
-            alert('Complaint submitted successfully!');
+            toast.success('Complaint submitted successfully!');
             setShowModal(false);
             setFormData({ subject: '', description: '', is_anonymous: false });
             fetchComplaints();
         } catch (error) {
             console.error("Submission failed:", error);
-            alert("Failed to submit complaint.");
+            toast.error("Failed to submit complaint.");
         }
     };
 

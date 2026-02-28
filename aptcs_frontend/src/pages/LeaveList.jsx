@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { FileText, Plus, X } from 'lucide-react';
+import { toast } from 'react-toastify';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const LeaveList = () => {
     const [leaves, setLeaves] = useState([]);
@@ -15,7 +18,7 @@ const LeaveList = () => {
 
     const fetchLeaves = async () => {
         try {
-            const response = await axios.get('http://127.0.0.1:8000/api/leave/requests/', {
+            const response = await axios.get(`${API_BASE_URL}/leave/requests/`, {
                 headers: { 'Authorization': `Bearer ${authTokens.access}` }
             });
             setLeaves(response.data);
@@ -27,16 +30,16 @@ const LeaveList = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://127.0.0.1:8000/api/leave/requests/', formData, {
+            await axios.post(`${API_BASE_URL}/leave/requests/`, formData, {
                 headers: { 'Authorization': `Bearer ${authTokens.access}` }
             });
-            alert('Leave request submitted!');
+            toast.success('Leave request submitted!');
             setShowModal(false);
             setFormData({ reason: '', start_date: '', end_date: '' });
             fetchLeaves();
         } catch (error) {
             console.error("Submission failed:", error);
-            alert("Failed to submit leave request.");
+            toast.error("Failed to submit leave request.");
         }
     };
 

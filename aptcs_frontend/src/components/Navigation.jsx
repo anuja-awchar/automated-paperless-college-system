@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Home, Vote, Building, Calendar, MessageSquare, LogOut, Menu, X } from 'lucide-react';
+import { Home, Vote, Building, Calendar, MessageSquare, LogOut, Menu, X, Bell, Briefcase } from 'lucide-react';
 
 const Navigation = () => {
     const { user, logoutUser } = useAuth();
@@ -14,6 +14,8 @@ const Navigation = () => {
         { path: '/facilities', label: 'Facilities', icon: Building },
         { path: '/leaves', label: 'Leaves', icon: Calendar },
         { path: '/complaints', label: 'Complaints', icon: MessageSquare },
+        { path: '/notices', label: 'Notices', icon: Bell },
+        { path: '/placements', label: 'Placements', icon: Briefcase },
     ];
 
     const isActive = (path) => location.pathname === path;
@@ -39,11 +41,10 @@ const Navigation = () => {
                                 <Link
                                     key={item.path}
                                     to={item.path}
-                                    className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-200 ${
-                                        isActive(item.path)
+                                    className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-200 ${isActive(item.path)
                                             ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
                                             : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
-                                    }`}
+                                        }`}
                                 >
                                     <Icon className="w-4 h-4" />
                                     <span className="font-medium">{item.label}</span>
@@ -92,11 +93,10 @@ const Navigation = () => {
                                         key={item.path}
                                         to={item.path}
                                         onClick={() => setIsMobileMenuOpen(false)}
-                                        className={`flex items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200 ${
-                                            isActive(item.path)
+                                        className={`flex items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200 ${isActive(item.path)
                                                 ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
                                                 : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
-                                        }`}
+                                            }`}
                                     >
                                         <Icon className="w-5 h-5" />
                                         <span className="font-medium">{item.label}</span>

@@ -3,6 +3,9 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { UserCheck } from 'lucide-react';
+import { toast } from 'react-toastify';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const VotingInterface = () => {
     const { id } = useParams();
@@ -15,7 +18,7 @@ const VotingInterface = () => {
     useEffect(() => {
         const fetchElectionDetails = async () => {
             try {
-                const response = await axios.get(`http://127.0.0.1:8000/api/election/elections/${id}/`, {
+                const response = await axios.get(`${API_BASE_URL}/election/elections/${id}/`, {
                     headers: { 'Authorization': `Bearer ${authTokens.access}` }
                 });
                 setElection(response.data);
@@ -31,17 +34,18 @@ const VotingInterface = () => {
     const handleVote = async () => {
         if (!selectedCandidate) return;
         try {
-            await axios.post('http://127.0.0.1:8000/api/election/vote/', {
+            await axios.post(`${API_BASE_URL}/election/vote/`, {
                 election: parseInt(id),
                 candidate: selectedCandidate
             }, {
                 headers: { 'Authorization': `Bearer ${authTokens.access}` }
             });
-            alert('Vote cast successfully!');
+            toast.success('Vote cast successfully!');
             navigate('/');
         } catch (error) {
             console.error("Voting failed:", error);
-            alert(error.response?.data?.non_field_errors || "Voting failed. Please try again.");
+            const message = error.response?.data?.non_field_errors || error.response?.data?.detail || "Voting failed. Please try again.";
+            toast.error(message);
         }
     };
 

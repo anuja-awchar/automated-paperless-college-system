@@ -8,8 +8,25 @@ import 'react-toastify/dist/ReactToastify.css';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(() => localStorage.getItem('authTokens') ? jwtDecode(localStorage.getItem('authTokens')) : null);
-    const [authTokens, setAuthTokens] = useState(() => localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens')) : null);
+    const [authTokens, setAuthTokens] = useState(() => {
+        const stored = localStorage.getItem('authTokens');
+        try {
+            return stored ? JSON.parse(stored) : null;
+        } catch {
+            return null;
+        }
+    });
+
+    const [user, setUser] = useState(() => {
+        const stored = localStorage.getItem('authTokens');
+        if (!stored) return null;
+        try {
+            const tokens = JSON.parse(stored);
+            return jwtDecode(tokens.access);
+        } catch {
+            return null;
+        }
+    });
     const [loading, setLoading] = useState(true);
     const [loginError, setLoginError] = useState('');
     const navigate = useNavigate();

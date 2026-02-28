@@ -1,19 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import { Calendar, Users, X, Loader2, CheckCircle, AlertCircle, Building } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { Calendar, Users, X, Loader2, CheckCircle, AlertCircle, Building, Plus } from 'lucide-react';
+import { toast } from 'react-toastify';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const FacilityList = () => {
     const [facilities, setFacilities] = useState([]);
     const [selectedFacility, setSelectedFacility] = useState(null);
     const [bookingData, setBookingData] = useState({ start_time: '', end_time: '', purpose: '' });
-    const { authTokens } = useAuth();
+    const { authTokens, user } = useAuth();
     const [showModal, setShowModal] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
     const [isLoading, setIsLoading] = useState(true);
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [isCreating, setIsCreating] = useState(false);
+    const [createData, setCreateData] = useState({
+        name: '',
+        type: 'auditorium',
+        capacity: '',
+        description: '',
+    });
 
     useEffect(() => {
         fetchFacilities();
@@ -21,7 +30,7 @@ const FacilityList = () => {
 
     const fetchFacilities = async () => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/facility/facilities/`, {
+            const response = await axios.get(`${API_BASE_URL}/facility/facilities/`, {
                 headers: { 'Authorization': `Bearer ${authTokens.access}` }
             });
             setFacilities(response.data);
@@ -43,7 +52,7 @@ const FacilityList = () => {
         setIsSubmitting(true);
         setErrorMessage('');
         try {
-            await axios.post(`${import.meta.env.VITE_API_BASE_URL}/facility/bookings/`, {
+            await axios.post(`${API_BASE_URL}/facility/bookings/`, {
                 facility: selectedFacility.id,
                 ...bookingData
             }, {
@@ -62,10 +71,49 @@ const FacilityList = () => {
         }
     };
 
+    const handleCreateSubmit = async (e) => {
+        e.preventDefault();
+        setIsCreating(true);
+        try {
+            await axios.post(`${API_BASE_URL}/facility/facilities/`, {
+                ...createData,
+                capacity: parseInt(createData.capacity, 10) || 0,
+            }, {
+                headers: { 'Authorization': `Bearer ${authTokens.access}` }
+            });
+            toast.success('Facility created successfully.');
+            setShowCreateModal(false);
+            setCreateData({
+                name: '',
+                type: 'auditorium',
+                capacity: '',
+                description: '',
+            });
+            fetchFacilities();
+        } catch (error) {
+            console.error('Error creating facility:', error);
+            toast.error('Failed to create facility.');
+        } finally {
+            setIsCreating(false);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
-                <h1 className="text-3xl font-extrabold text-gray-900 mb-8">Campus Facilities</h1>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
+                    <h1 className="text-3xl font-extrabold text-gray-900">Campus Facilities</h1>
+                    {user?.role === 'admin' && (
+                        <button
+                            type="button"
+                            onClick={() => setShowCreateModal(true)}
+                            className="inline-flex items-center px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-semibold shadow-md hover:bg-indigo-700"
+                        >
+                            <Plus className="w-4 h-4 mr-2" />
+                            Add Facility
+                        </button>
+                    )}
+                </div>
 
                     {isLoading ? (
                         <div className="flex justify-center items-center py-12">
@@ -176,6 +224,73 @@ const FacilityList = () => {
                                                 <span>Confirm Booking</span>
                                             </>
                                         )}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+
+                    {user?.role === 'admin' && showCreateModal && (
+                        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                            <div className="bg-white rounded-2xl max-w-md w-full p-6 relative shadow-2xl">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowCreateModal(false)}
+                                    className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+                                >
+                                    <X className="h-5 w-5" />
+                                </button>
+                                <h2 className="text-xl font-bold text-gray-900 mb-4">Add New Facility</h2>
+                                <form onSubmit={handleCreateSubmit} className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                                        <input
+                                            type="text"
+                                            required
+                                            value={createData.name}
+                                            onChange={(e) => setCreateData({ ...createData, name: e.target.value })}
+                                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                                        <select
+                                            value={createData.type}
+                                            onChange={(e) => setCreateData({ ...createData, type: e.target.value })}
+                                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        >
+                                            <option value="auditorium">Auditorium</option>
+                                            <option value="lab">Laboratory</option>
+                                            <option value="ground">Sports Ground</option>
+                                            <option value="classroom">Classroom</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Capacity</label>
+                                        <input
+                                            type="number"
+                                            required
+                                            min="1"
+                                            value={createData.capacity}
+                                            onChange={(e) => setCreateData({ ...createData, capacity: e.target.value })}
+                                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                        <textarea
+                                            rows={3}
+                                            value={createData.description}
+                                            onChange={(e) => setCreateData({ ...createData, description: e.target.value })}
+                                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+                                        />
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        disabled={isCreating}
+                                        className="w-full inline-flex justify-center items-center px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 disabled:opacity-70"
+                                    >
+                                        {isCreating ? 'Creating...' : 'Create Facility'}
                                     </button>
                                 </form>
                             </div>

@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'facility',
     'leave',
     'complaint',
+    'notices',
+    'placement',
 ]
 
 MIDDLEWARE = [
@@ -122,10 +124,14 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
+# Static & Media files (CSS, JavaScript, Images, Uploads)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Custom User Model
 AUTH_USER_MODEL = 'users.User'

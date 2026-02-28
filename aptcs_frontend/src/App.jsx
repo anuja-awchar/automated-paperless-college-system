@@ -9,7 +9,9 @@ import VotingInterface from './pages/VotingInterface';
 import FacilityList from './pages/FacilityList';
 import LeaveList from './pages/LeaveList';
 import ComplaintList from './pages/ComplaintList';
+import NoticeList from './pages/NoticeList';
 import ElectionResults from './pages/ElectionResults';
+import PlacementList from './pages/PlacementList';
 
 function App() {
   return (
@@ -26,6 +28,8 @@ function App() {
               <Route path="/facilities" element={<FacilityList />} />
               <Route path="/leaves" element={<LeaveList />} />
               <Route path="/complaints" element={<ComplaintList />} />
+              <Route path="/notices" element={<NoticeList />} />
+              <Route path="/placements" element={<PlacementList />} />
             </Route>
           </Route>
         </Routes>

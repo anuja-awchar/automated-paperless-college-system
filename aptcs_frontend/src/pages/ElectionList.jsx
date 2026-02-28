@@ -1,34 +1,95 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import { Calendar, Clock, ChevronRight, BarChart2 } from 'lucide-react';
+import { Calendar, ChevronRight, BarChart2, Plus, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const ElectionList = () => {
     const [elections, setElections] = useState([]);
-    const { authTokens } = useAuth();
+    const [isCreateOpen, setIsCreateOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [createData, setCreateData] = useState({
+        title: '',
+        description: '',
+        start_date: '',
+        end_date: '',
+        is_active: true,
+    });
+    const { authTokens, user } = useAuth();
+
+    const fetchElections = async () => {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/election/elections/`, {
+                headers: {
+                    'Authorization': `Bearer ${authTokens.access}`
+                }
+            });
+            setElections(response.data);
+        } catch (error) {
+            console.error("Error fetching elections:", error);
+            toast.error('Failed to load elections.');
+        }
+    };
 
     useEffect(() => {
-        const fetchElections = async () => {
-            try {
-                const response = await axios.get('http://127.0.0.1:8000/api/election/elections/', {
-                    headers: {
-                        'Authorization': `Bearer ${authTokens.access}`
-                    }
-                });
-                setElections(response.data);
-            } catch (error) {
-                console.error("Error fetching elections:", error);
-            }
-        };
-        fetchElections();
+        if (authTokens) {
+            fetchElections();
+        }
     }, [authTokens]);
+
+    const handleCreateSubmit = async (e) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        try {
+            await axios.post(`${API_BASE_URL}/election/elections/`, createData, {
+                headers: {
+                    'Authorization': `Bearer ${authTokens.access}`,
+                },
+            });
+            toast.success('Election created successfully.');
+            setIsCreateOpen(false);
+            setCreateData({
+                title: '',
+                description: '',
+                start_date: '',
+                end_date: '',
+                is_active: true,
+            });
+            fetchElections();
+        } catch (error) {
+            console.error('Error creating election:', error);
+            toast.error('Failed to create election.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto">
-                <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 mb-2 animate-fade-in-up">Active Elections</h1>
-                <p className="text-gray-600 mb-8 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>Participate in democracy using the secure digital voting system.</p>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+                    <div>
+                        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 mb-2 animate-fade-in-up">
+                            Active Elections
+                        </h1>
+                        <p className="text-gray-600 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+                            Participate in democracy using the secure digital voting system.
+                        </p>
+                    </div>
+                    {user?.role === 'admin' && (
+                        <button
+                            type="button"
+                            onClick={() => setIsCreateOpen(true)}
+                            className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-semibold shadow-md hover:bg-indigo-700 transition-colors"
+                        >
+                            <Plus className="w-4 h-4 mr-2" />
+                            Create Election
+                        </button>
+                    )}
+                </div>
 
                 <div className="space-y-6">
                     {elections.length === 0 ? (
@@ -98,6 +159,84 @@ const ElectionList = () => {
                     )}
                 </div>
             </div>
+
+            {user?.role === 'admin' && isCreateOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+                    <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 relative">
+                        <button
+                            type="button"
+                            onClick={() => setIsCreateOpen(false)}
+                            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+                        <h2 className="text-xl font-bold text-gray-900 mb-4">Create New Election</h2>
+                        <form onSubmit={handleCreateSubmit} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={createData.title}
+                                    onChange={(e) => setCreateData({ ...createData, title: e.target.value })}
+                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                <textarea
+                                    required
+                                    rows={3}
+                                    value={createData.description}
+                                    onChange={(e) => setCreateData({ ...createData, description: e.target.value })}
+                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
+                                />
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                                    <input
+                                        type="datetime-local"
+                                        required
+                                        value={createData.start_date}
+                                        onChange={(e) => setCreateData({ ...createData, start_date: e.target.value })}
+                                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                                    <input
+                                        type="datetime-local"
+                                        required
+                                        value={createData.end_date}
+                                        onChange={(e) => setCreateData({ ...createData, end_date: e.target.value })}
+                                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <input
+                                    id="is_active"
+                                    type="checkbox"
+                                    checked={createData.is_active}
+                                    onChange={(e) => setCreateData({ ...createData, is_active: e.target.checked })}
+                                    className="h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                                />
+                                <label htmlFor="is_active" className="text-sm text-gray-700">
+                                    Active
+                                </label>
+                            </div>
+                            <button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="w-full inline-flex justify-center items-center px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 disabled:opacity-70"
+                            >
+                                {isSubmitting ? 'Creating...' : 'Create Election'}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
